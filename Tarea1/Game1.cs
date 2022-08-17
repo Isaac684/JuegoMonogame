@@ -39,6 +39,8 @@ namespace Tarea1
             pez = Content.Load<Texture2D>("pez1");
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
+            
+            MediaPlayer.Volume = 0.20F;
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = true; 
             _font = Content.Load<SpriteFont>("fuente1");
