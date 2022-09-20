@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System;
 
 namespace Tarea1
 {
@@ -12,37 +13,48 @@ namespace Tarea1
         Color fondo = new Color(51, 134, 255);
         private SpriteFont _font;
         Texture2D pez;//aqui esta la clave
+        Vector2 posicionpez;
+
         Texture2D fondoPantalla;
-        Vector2 posicion;
+
+        Texture2D gusano;
+        Vector2 posiciongusano;
+        int puntaje = 0;
+        int pezDireccion = 0; //1=izquierda 0=derecha
+
         Song song;
         float vel;
-        
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            this._graphics.PreferredBackBufferWidth = 1366;//ancho pantalla
+            this._graphics.PreferredBackBufferHeight = 700;//alto
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            posicion = new Vector2((_graphics.PreferredBackBufferWidth / 2)-30, (_graphics.PreferredBackBufferHeight / 2)-30);
-            vel = 10f;
-            
+            posicionpez = new Vector2((_graphics.PreferredBackBufferWidth / 2) - 30, (_graphics.PreferredBackBufferHeight / 2) - 30);
+            vel = 5f;
+            Random rnd = new Random();
+            posiciongusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));//105,650 Y  // x 25,1290
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            pez = Content.Load<Texture2D>("pez1");
+            pez = Content.Load<Texture2D>("pez/pezderecha1");
+            gusano = Content.Load<Texture2D>("gusano/gusano1");
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
-            
-            MediaPlayer.Volume = 0.20F;
+
+            MediaPlayer.Volume = 0.0F;
             MediaPlayer.Play(song);
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             _font = Content.Load<SpriteFont>("fuente1");
 
             // TODO: use this.Content to load your game content here
@@ -57,38 +69,81 @@ namespace Tarea1
 
             if (gameTime.TotalGameTime.Milliseconds % 120 == 0)
             {
-                pez = Content.Load<Texture2D>("pez2");
-            }
-            if (gameTime.TotalGameTime.Milliseconds % 170 == 0)
-            {
-                pez = Content.Load<Texture2D>("pez3");
-            }
-            if (gameTime.TotalGameTime.Milliseconds %220 == 0)
-            {
-                pez = Content.Load<Texture2D>("pez1");
+                gusano = Content.Load<Texture2D>("gusano/gusano2");
             }
             if (gameTime.TotalGameTime.Milliseconds % 270 == 0)
             {
-                pez = Content.Load<Texture2D>("pez4");
+                gusano = Content.Load<Texture2D>("gusano/gusano3");
             }
+            if (gameTime.TotalGameTime.Milliseconds % 390 == 0)
+            {
+                gusano = Content.Load<Texture2D>("gusano/gusano4");
+            }
+            if (gameTime.TotalGameTime.Milliseconds % 490 == 0)
+            {
+                gusano = Content.Load<Texture2D>("gusano/gusano1");
+            }
+
+            if (pezDireccion == 0)
+            {
+                if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezderecha2");
+                }
+                if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezderecha3");
+                }
+                if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezderecha4");
+                }
+                /*if (gameTime.TotalGameTime.Milliseconds % 450 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez1");
+                }*/
+            }
+            else if (pezDireccion == 1)
+            {
+                if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezizquierda2");
+                }
+                if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezizquierda3");
+                }
+                if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez/pezizquierda4");
+                }
+                /*if (gameTime.TotalGameTime.Milliseconds % 450 == 0)
+                {
+                    pez = Content.Load<Texture2D>("pez1");
+                }*/
+            }
+
 
             var teclaestado = Keyboard.GetState();
 
-            if (teclaestado.IsKeyDown(Keys.Up) && posicion.Y>=3)
+            if (teclaestado.IsKeyDown(Keys.Up) && posicionpez.Y >= 40)
             {
-                posicion.Y -= vel;
+                posicionpez.Y -= vel;
             }
-            if (teclaestado.IsKeyDown(Keys.Down) && posicion.Y <= _graphics.GraphicsDevice.Viewport.Height - 135)
+            if (teclaestado.IsKeyDown(Keys.Down) && posicionpez.Y <= _graphics.GraphicsDevice.Viewport.Height - 135)
             {
-                posicion.Y += vel;
+                posicionpez.Y += vel;
             }
-            if (teclaestado.IsKeyDown(Keys.Left) && posicion.X >= 3)
+            if (teclaestado.IsKeyDown(Keys.Left) && posicionpez.X >= 3)
             {
-                posicion.X -= vel;
+
+                pezDireccion = 1;
+                posicionpez.X -= vel;
             }
-            if (teclaestado.IsKeyDown(Keys.Right) && posicion.X <= _graphics.GraphicsDevice.Viewport.Width - 130)
+            if (teclaestado.IsKeyDown(Keys.Right) && posicionpez.X <= _graphics.GraphicsDevice.Viewport.Width - 130)
             {
-                posicion.X += vel;
+                pezDireccion = 0;
+                posicionpez.X += vel;
             }
 
             base.Update(gameTime);
@@ -100,12 +155,13 @@ namespace Tarea1
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-                _spriteBatch.Draw(fondoPantalla, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.White);
-                _spriteBatch.DrawString(_font, "Josue Isaac Herrera Campos", new Vector2(1, 1), Color.White);
-                _spriteBatch.DrawString(_font, "120 FPS", new Vector2(_graphics.PreferredBackBufferWidth / 2, 1), Color.White);
-                _spriteBatch.DrawString(_font, "HC21018", new Vector2(_graphics.PreferredBackBufferWidth - 76, 1), Color.White);
+            _spriteBatch.Draw(fondoPantalla, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.White);
+            _spriteBatch.DrawString(_font, "Josue Isaac Herrera Campos", new Vector2(1, 1), Color.White);
+            _spriteBatch.DrawString(_font, "Score " + puntaje, new Vector2(_graphics.PreferredBackBufferWidth / 2, 1), Color.White);
+            //_spriteBatch.DrawString(_font, "HC21018", new Vector2(_graphics.PreferredBackBufferWidth - 76, 1), Color.White);
 
-            _spriteBatch.Draw(pez, posicion, Color.White);
+            _spriteBatch.Draw(pez, posicionpez, Color.White);
+            _spriteBatch.Draw(gusano, posiciongusano, Color.LightGreen);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
