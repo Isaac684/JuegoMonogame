@@ -10,24 +10,26 @@ namespace Tarea1
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        GameTime tiempo;
 
         Texture2D fondoPantalla;
         Texture2D pared;
 
         Color fondo = new Color(51, 134, 255);
-        private SpriteFont _font;
+        SpriteFont _font;
         Texture2D pez;//aqui esta la clave
         Vector2 posicionpez;
+        int pezDireccion = 0; //1=izquierda 0=derecha
 
         Texture2D gusano;
         Vector2 posiciongusano;
-        string puntaje;
-        int pezDireccion = 0; //1=izquierda 0=derecha
+        Texture2D[] gusanosz;
+
+        string puntaje;        
 
         Texture2D tiburon;
+        Texture2D[,] tiburonframes;
+        int cambiarframe = 0;
         Vector2 posiciontiburon;
-        //int puntaje1 = 0;
         int tiburonDireccion = 0; //1=izquierda 0=derecha
 
         Song song;
@@ -49,22 +51,33 @@ namespace Tarea1
         {
             rects = new Rectangle[3];
             rects[0] = new Rectangle();
-            rects[0] = new Rectangle((int)posicionpez.X+10,(int)posicionpez.Y,pez.Width-20,pez.Height);
+            rects[0] = new Rectangle((int)posicionpez.X,(int)posicionpez.Y,pez.Width-20,pez.Height);
             rects[1] = new Rectangle((int)posiciongusano.X, (int)posiciongusano.Y, gusano.Width, gusano.Height);
             rects[2] = new Rectangle((int)posiciontiburon.X, (int)posiciontiburon.Y+53, tiburon.Width, tiburon.Height-60);
 
         }
 
+        void quecolisiono()
+        {
+
+        }
+ 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            //arreglo que contendra todos los frames del tiburon
+            tiburonframes = new Texture2D[20, 2];
+
             posicionpez = new Vector2((_graphics.PreferredBackBufferWidth / 2) - 30, (_graphics.PreferredBackBufferHeight / 2) - 30);
             vel = 5f;
+
+            //se define una posicion inicial random al gusano
             Random rnd = new Random();
             posiciongusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));//105,650 Y  // x 25,1290
 
+            //se define una posicion inicial random al tiburon en y
             Random rand = new Random();
-            posiciontiburon = new Vector2(-200, rand.Next(25, 570));//105,650 Y  // x 25,1290
+            posiciontiburon = new Vector2(-200, rand.Next(25, 570));
             base.Initialize();
         }
 
@@ -73,14 +86,27 @@ namespace Tarea1
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             pez = Content.Load<Texture2D>("pez/pezderecha1");
             gusano = Content.Load<Texture2D>("gusano/gusano1");
-            tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha1");
+            
+            //cargando los sprite del tiburon 1 es izquierda 0 derecha
+            for (int i = 0; i < 20; i++)
+            {
+                tiburonframes[i, 1] = Content.Load<Texture2D>("tiburon/tiburonizquierda" + (i + 1));
+            }
 
+            for (int i = 0; i < 20; i++)
+            {
+                tiburonframes[i, 0] = Content.Load<Texture2D>("tiburon/tiburonderecha" + (i + 1));
+            }
+
+            //asignandole el primer frame al sprite tiburon
+            tiburon = tiburonframes[0, 0];
+            
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
             pared = Content.Load<Texture2D>("rect");
 
             
-            MediaPlayer.Volume = 0.7F;
+            MediaPlayer.Volume = 0.0F;
             MediaPlayer.Play(song, TimeSpan.Parse("00:02:30"));
             //MediaPlayer.IsRepeating = true;
             _font = Content.Load<SpriteFont>("fuente1");
@@ -93,7 +119,6 @@ namespace Tarea1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            tiempo = gameTime;
             // TODO: Add your update logic here
 
             if (gameTime.TotalGameTime.Milliseconds % 120 == 0)
@@ -146,91 +171,26 @@ namespace Tarea1
                 {
                     pez = Content.Load<Texture2D>("pez/pezizquierda4");
                 }
-                /*if (gameTime.TotalGameTime.Milliseconds % 450 == 0)
-                {
-                    pez = Content.Load<Texture2D>("pez1");
-                }*/
             }
             
+            //el tiburon empieza a moverse despues de 
             if (gameTime.TotalGameTime.Seconds > 1.5)
             {
-                puntaje = MediaPlayer.PlayPosition.ToString();
                 if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
                 {
-                    if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha2");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha3");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
-                    }
-                    /*if (gameTime.TotalGameTime.Milliseconds % 450 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha5");
-                    }
-                    /*if (gameTime.TotalGameTime.Milliseconds % 400 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha6");
-                    }
-                    /*if (gameTime.TotalGameTime.Milliseconds % 480 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha7");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 560 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha8");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 640 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha9");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 720 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha10");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 800 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha11");
-                    }
-                    /*if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
-                    }*/
                     posiciontiburon.X += 8;
-
                 }
 
                 if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
                 {
-                    tiburonDireccion = 1;
-                    tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda1");
+                    tiburonDireccion = 1;                    
                     Random random = new Random();
                     posiciontiburon.Y = random.Next(25, 570);
                 }
 
                 if (tiburonDireccion == 1 && posiciontiburon.X >= -200)
                 {
-                    if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda2");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda3");
-                    }
-                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
-                    {
-                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda4");
-                    }
+                    
                     posiciontiburon.X -= 8;
                 }
 
@@ -238,9 +198,21 @@ namespace Tarea1
                 {
 
                     tiburonDireccion = 0;
-                    tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha1");
                     Random random = new Random();
                     posiciontiburon.Y = random.Next(25, 570);
+                }
+
+                //animacion del tiburon cada cierto tiempo cambia al siguiente frame
+                if (gameTime.TotalGameTime.Milliseconds % 25 == 0)
+                {
+                    cambiarframe++;
+                    tiburon = tiburonframes[cambiarframe, tiburonDireccion];
+                }
+
+                //variable bandera para la posicion del frame del sprite tiburon
+                if (cambiarframe == 19)
+                {
+                    cambiarframe = 0;
                 }
             }
             
