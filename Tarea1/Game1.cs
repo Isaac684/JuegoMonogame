@@ -10,12 +10,14 @@ namespace Tarea1
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        Texture2D fondoPantalla;
+        Texture2D pared;
+
         Color fondo = new Color(51, 134, 255);
         private SpriteFont _font;
         Texture2D pez;//aqui esta la clave
         Vector2 posicionpez;
-
-        Texture2D fondoPantalla;
 
         Texture2D gusano;
         Vector2 posiciongusano;
@@ -25,6 +27,8 @@ namespace Tarea1
         Song song;
         float vel;
 
+        Rectangle[] rects;//arreglo maneja las coordenadas de las intercepciones de sprite
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,6 +36,15 @@ namespace Tarea1
             IsMouseVisible = true;
             this._graphics.PreferredBackBufferWidth = 1366;//ancho pantalla
             this._graphics.PreferredBackBufferHeight = 700;//alto
+            
+        }
+
+        void crearrectangulos()
+        {
+            rects = new Rectangle[3];
+            rects[0] = new Rectangle();
+            rects[0] = new Rectangle((int)posicionpez.X+10,(int)posicionpez.Y,pez.Width-20,pez.Height);
+            rects[1] = new Rectangle((int)posiciongusano.X, (int)posiciongusano.Y, gusano.Width, gusano.Height);
         }
 
         protected override void Initialize()
@@ -41,6 +54,7 @@ namespace Tarea1
             vel = 5f;
             Random rnd = new Random();
             posiciongusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));//105,650 Y  // x 25,1290
+            
             base.Initialize();
         }
 
@@ -51,7 +65,9 @@ namespace Tarea1
             gusano = Content.Load<Texture2D>("gusano/gusano1");
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
+            pared = Content.Load<Texture2D>("rect");
 
+            
             MediaPlayer.Volume = 0.0F;
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = true;
@@ -138,10 +154,12 @@ namespace Tarea1
             {
 
                 pezDireccion = 1;
+
                 posicionpez.X -= vel;
             }
             if (teclaestado.IsKeyDown(Keys.Right) && posicionpez.X <= _graphics.GraphicsDevice.Viewport.Width - 130)
             {
+
                 pezDireccion = 0;
                 posicionpez.X += vel;
             }
@@ -160,8 +178,14 @@ namespace Tarea1
             _spriteBatch.DrawString(_font, "Score " + puntaje, new Vector2(_graphics.PreferredBackBufferWidth / 2, 1), Color.White);
             //_spriteBatch.DrawString(_font, "HC21018", new Vector2(_graphics.PreferredBackBufferWidth - 76, 1), Color.White);
 
-            _spriteBatch.Draw(pez, posicionpez, Color.White);
+            
+            crearrectangulos();
+            for (int i = 0; i < rects.Length; i++)
+            {
+                _spriteBatch.Draw(pared, rects[i], Color.White);
+            }
             _spriteBatch.Draw(gusano, posiciongusano, Color.LightGreen);
+            _spriteBatch.Draw(pez, posicionpez, Color.White);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
