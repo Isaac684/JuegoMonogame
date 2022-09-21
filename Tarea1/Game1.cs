@@ -51,6 +51,8 @@ namespace Tarea1
             rects[0] = new Rectangle();
             rects[0] = new Rectangle((int)posicionpez.X+10,(int)posicionpez.Y,pez.Width-20,pez.Height);
             rects[1] = new Rectangle((int)posiciongusano.X, (int)posiciongusano.Y, gusano.Width, gusano.Height);
+            rects[2] = new Rectangle((int)posiciontiburon.X, (int)posiciontiburon.Y+53, tiburon.Width, tiburon.Height-60);
+
         }
 
         protected override void Initialize()
@@ -150,13 +152,61 @@ namespace Tarea1
                 }*/
             }
             
-            if (gameTime.TotalGameTime.Seconds > 1.5 && MediaPlayer.State.ToString() == "Playing")
+            if (gameTime.TotalGameTime.Seconds > 1.5)
             {
                 puntaje = MediaPlayer.PlayPosition.ToString();
                 if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
                 {
-
+                    if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha2");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha3");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
+                    }
+                    /*if (gameTime.TotalGameTime.Milliseconds % 450 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha5");
+                    }
+                    /*if (gameTime.TotalGameTime.Milliseconds % 400 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha6");
+                    }
+                    /*if (gameTime.TotalGameTime.Milliseconds % 480 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha7");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 560 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha8");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 640 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha9");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 720 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha10");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 800 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha11");
+                    }
+                    /*if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha4");
+                    }*/
                     posiciontiburon.X += 8;
+
                 }
 
                 if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
@@ -169,6 +219,18 @@ namespace Tarea1
 
                 if (tiburonDireccion == 1 && posiciontiburon.X >= -200)
                 {
+                    if (gameTime.TotalGameTime.Milliseconds % 70 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda2");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 200 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda3");
+                    }
+                    if (gameTime.TotalGameTime.Milliseconds % 320 == 0)
+                    {
+                        tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda4");
+                    }
                     posiciontiburon.X -= 8;
                 }
 
