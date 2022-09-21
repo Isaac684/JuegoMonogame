@@ -10,6 +10,7 @@ namespace Tarea1
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        GameTime tiempo;
 
         Texture2D fondoPantalla;
         Texture2D pared;
@@ -21,12 +22,17 @@ namespace Tarea1
 
         Texture2D gusano;
         Vector2 posiciongusano;
-        int puntaje = 0;
+        string puntaje;
         int pezDireccion = 0; //1=izquierda 0=derecha
+
+        Texture2D tiburon;
+        Vector2 posiciontiburon;
+        //int puntaje1 = 0;
+        int tiburonDireccion = 0; //1=izquierda 0=derecha
 
         Song song;
         float vel;
-
+        bool iniciojuego = false;
         Rectangle[] rects;//arreglo maneja las coordenadas de las intercepciones de sprite
 
         public Game1()
@@ -54,7 +60,9 @@ namespace Tarea1
             vel = 5f;
             Random rnd = new Random();
             posiciongusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));//105,650 Y  // x 25,1290
-            
+
+            Random rand = new Random();
+            posiciontiburon = new Vector2(-200, rand.Next(25, 570));//105,650 Y  // x 25,1290
             base.Initialize();
         }
 
@@ -63,14 +71,16 @@ namespace Tarea1
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             pez = Content.Load<Texture2D>("pez/pezderecha1");
             gusano = Content.Load<Texture2D>("gusano/gusano1");
+            tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha1");
+
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
             pared = Content.Load<Texture2D>("rect");
 
             
-            MediaPlayer.Volume = 0.0F;
-            MediaPlayer.Play(song);
-            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.7F;
+            MediaPlayer.Play(song, TimeSpan.Parse("00:02:30"));
+            //MediaPlayer.IsRepeating = true;
             _font = Content.Load<SpriteFont>("fuente1");
 
             // TODO: use this.Content to load your game content here
@@ -81,6 +91,7 @@ namespace Tarea1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            tiempo = gameTime;
             // TODO: Add your update logic here
 
             if (gameTime.TotalGameTime.Milliseconds % 120 == 0)
@@ -138,8 +149,39 @@ namespace Tarea1
                     pez = Content.Load<Texture2D>("pez1");
                 }*/
             }
+            
+            if (gameTime.TotalGameTime.Seconds > 1.5 && MediaPlayer.State.ToString() == "Playing")
+            {
+                puntaje = MediaPlayer.PlayPosition.ToString();
+                if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
+                {
 
+                    posiciontiburon.X += 8;
+                }
 
+                if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
+                {
+                    tiburonDireccion = 1;
+                    tiburon = Content.Load<Texture2D>("tiburon/tiburonizquierda1");
+                    Random random = new Random();
+                    posiciontiburon.Y = random.Next(25, 570);
+                }
+
+                if (tiburonDireccion == 1 && posiciontiburon.X >= -200)
+                {
+                    posiciontiburon.X -= 8;
+                }
+
+                if (tiburonDireccion == 1 && posiciontiburon.X <= -200)
+                {
+
+                    tiburonDireccion = 0;
+                    tiburon = Content.Load<Texture2D>("tiburon/tiburonderecha1");
+                    Random random = new Random();
+                    posiciontiburon.Y = random.Next(25, 570);
+                }
+            }
+            
             var teclaestado = Keyboard.GetState();
 
             if (teclaestado.IsKeyDown(Keys.Up) && posicionpez.Y >= 40)
@@ -186,6 +228,8 @@ namespace Tarea1
             }
             _spriteBatch.Draw(gusano, posiciongusano, Color.LightGreen);
             _spriteBatch.Draw(pez, posicionpez, Color.White);
+            _spriteBatch.Draw(tiburon, posiciontiburon, Color.White);
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }
