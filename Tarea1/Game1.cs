@@ -129,7 +129,7 @@ namespace Tarea1
 
             escudo = Content.Load<Texture2D>("fondovacio");
 
-            MediaPlayer.Volume = 0.8F;
+            //MediaPlayer.Volume = 1F;
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = true;
             _font = Content.Load<SpriteFont>("fuente1");
@@ -250,13 +250,15 @@ namespace Tarea1
                     Vector2 tempgusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));
                     Rectangle temp = new Rectangle((int)tempgusano.X, (int)tempgusano.Y, gusano.Width, gusano.Height);
 
-                    while (temp.Intersects(rects[2]))
+                    while (temp.Intersects(rects[2]) || temp.Intersects(rects[0]))
                     {
                         tempgusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));
                         temp = new Rectangle((int)tempgusano.X, (int)tempgusano.Y, gusano.Width, gusano.Height);
                     }
                     posiciongusano = tempgusano;
+                    SoundEffect.MasterVolume = 0.6f;
                     punto.Play();
+                    //SoundEffect.MasterVolume = 1f;
                 }
 
 
@@ -265,7 +267,7 @@ namespace Tarea1
                 if (peztiburon == true && quecolisiono() == 2)
                 {
                     peztiburon = false;
-                    puntaje = 0;
+                    //puntaje = 0;
                     if (totalvida > 1)
                     {
                         escudo = Content.Load<Texture2D>("escudo");
@@ -291,16 +293,6 @@ namespace Tarea1
                         finjuego = true;
                         MediaPlayer.Play(final);
                         MediaPlayer.IsRepeating = false;
-                        if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
-                        {
-                            posiciontiburon.X += 8;
-                        }
-                        else if (tiburonDireccion == 1 && posiciontiburon.X >= -300)
-                        {
-
-                            posiciontiburon.X -= 8;
-                        }
-
                     }
 
                 }
@@ -311,6 +303,7 @@ namespace Tarea1
                     posicionpez.Y -= vel;
                     peztiburon = false;
                 }
+
                 //cuando el tiburon toca el pez
                 //else if (peztiburon == true)
                 //{
@@ -365,7 +358,36 @@ namespace Tarea1
                     escudo = Content.Load<Texture2D>("fondovacio");
                 }
             }
-            
+            var teclaestado1 = Keyboard.GetState();
+            if (teclaestado1.IsKeyDown(Keys.Enter) && finjuego)
+            {
+                puntaje = 0;
+                totalvida = 3;
+                peztiburon = false;
+                pezgusano = false;
+
+                //se define una posicion inicial random al tiburon en y
+                Random rand = new Random();
+                posiciontiburon = new Vector2(-1500, rand.Next(25, 570));//-1500
+
+
+                posicionpez = new Vector2((_graphics.PreferredBackBufferWidth / 2) - 30, (_graphics.PreferredBackBufferHeight / 2) - 30);
+                vel = 5f;
+
+                //se define una posicion inicial random al gusano
+                Random rnd = new Random();
+                posiciongusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));//105,650 Y  // x 25,1290
+                MediaPlayer.Play(song);
+                MediaPlayer.IsRepeating = true;
+                finjuego = false;
+
+                //gameover = Content.Load<Texture2D>("fondovacio");
+            }
+            else if (teclaestado1.IsKeyDown(Keys.Escape))
+            {
+                Exit();
+            }
+
             base.Update(gameTime);
         }
 
@@ -395,6 +417,9 @@ namespace Tarea1
             {
                 _spriteBatch.Draw(gameover, new Rectangle(0, 0, 1366, 700), Color.White);
                 
+                _spriteBatch.DrawString(_font, "Puntaje total: " + puntaje, new Vector2(_graphics.PreferredBackBufferWidth/2-100, 400), Color.White);
+                _spriteBatch.DrawString(_font, "Presione Enter para reiniciar", new Vector2(_graphics.PreferredBackBufferWidth/2-200, 450), Color.White);
+                _spriteBatch.DrawString(_font, "Presione Esc para salir", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 150, 500), Color.White);
             }
             _spriteBatch.End();
             base.Draw(gameTime);
