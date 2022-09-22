@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
+using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Tarea1
 {
@@ -24,7 +26,7 @@ namespace Tarea1
         Vector2 posiciongusano;
         Texture2D[] gusanosz;
 
-        string puntaje;        
+        int puntaje = 0;        
 
         Texture2D tiburon;
         Texture2D[,] tiburonframes;
@@ -35,7 +37,13 @@ namespace Tarea1
         Song song;
         float vel;
         bool iniciojuego = false;
+
+        //controlar colisiones
+        bool pezgusano = false;
+        bool peztiburon = false;
+
         Rectangle[] rects;//arreglo maneja las coordenadas de las intercepciones de sprite
+        List<Rectangle> rectas;
 
         public Game1()
         {
@@ -49,17 +57,14 @@ namespace Tarea1
 
         void crearrectangulos()
         {
-            rects = new Rectangle[3];
-            rects[0] = new Rectangle();
-            rects[0] = new Rectangle((int)posicionpez.X,(int)posicionpez.Y,pez.Width-20,pez.Height);
-            rects[1] = new Rectangle((int)posiciongusano.X, (int)posiciongusano.Y, gusano.Width, gusano.Height);
-            rects[2] = new Rectangle((int)posiciontiburon.X, (int)posiciontiburon.Y+53, tiburon.Width, tiburon.Height-60);
-
-        }
-
-        void quecolisiono()
-        {
-
+            rectas = new List<Rectangle>();
+            rects = new Rectangle[4];
+            //rects[0] = new Rectangle();
+            rects[0] = new Rectangle((int)posicionpez.X+10,(int)posicionpez.Y+33,pez.Width-20,pez.Height-33);            
+            rects[1] = new Rectangle((int)posiciontiburon.X+25, (int)posiciontiburon.Y+40, tiburon.Width-45, tiburon.Height-65);
+            rects[2] = new Rectangle((int)posiciongusano.X, (int)posiciongusano.Y, gusano.Width, gusano.Height);
+            //rectas.Add(new Rectangle((int)posicionpez.X + 10, (iposiciongusano.Y+300nt)posicionpez.Y, pez.Width - 20, pez.Height));
+            //rectas.Add(new Rectangle((int)posiciontiburon.X, (int)posiciontiburon.Y + 53, tiburon.Width, tiburon.Height - 60));
         }
  
         protected override void Initialize()
@@ -77,7 +82,7 @@ namespace Tarea1
 
             //se define una posicion inicial random al tiburon en y
             Random rand = new Random();
-            posiciontiburon = new Vector2(-200, rand.Next(25, 570));
+            posiciontiburon = new Vector2(-1500, rand.Next(25, 570));//-1500
             base.Initialize();
         }
 
@@ -172,68 +177,104 @@ namespace Tarea1
                     pez = Content.Load<Texture2D>("pez/pezizquierda4");
                 }
             }
+
+
             
-            //el tiburon empieza a moverse despues de 
-            if (gameTime.TotalGameTime.Seconds > 1.5)
+            //desplazamiento del tiburon 
+            if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
             {
-                if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
-                {
-                    posiciontiburon.X += 8;
-                }
-
-                if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
-                {
-                    tiburonDireccion = 1;                    
-                    Random random = new Random();
-                    posiciontiburon.Y = random.Next(25, 570);
-                }
-
-                if (tiburonDireccion == 1 && posiciontiburon.X >= -200)
-                {
-                    
-                    posiciontiburon.X -= 8;
-                }
-
-                if (tiburonDireccion == 1 && posiciontiburon.X <= -200)
-                {
-
-                    tiburonDireccion = 0;
-                    Random random = new Random();
-                    posiciontiburon.Y = random.Next(25, 570);
-                }
-
-                //animacion del tiburon cada cierto tiempo cambia al siguiente frame
-                if (gameTime.TotalGameTime.Milliseconds % 25 == 0)
-                {
-                    cambiarframe++;
-                    tiburon = tiburonframes[cambiarframe, tiburonDireccion];
-                }
-
-                //variable bandera para la posicion del frame del sprite tiburon
-                if (cambiarframe == 19)
-                {
-                    cambiarframe = 0;
-                }
+                posiciontiburon.X += 8;
             }
-            
+            else if (tiburonDireccion == 1 && posiciontiburon.X >= -300)
+            {
+
+                posiciontiburon.X -= 8;
+            }
+            else if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
+            {
+                tiburonDireccion = 1;
+                Random random = new Random();
+                posiciontiburon.Y = random.Next(25, 570);
+                //posiciontiburon.X = 1406;
+            }
+
+            else if (tiburonDireccion == 1 && posiciontiburon.X <= -300)
+            {
+
+                tiburonDireccion = 0;
+                Random random = new Random();
+                posiciontiburon.Y = random.Next(25, 570);
+            }
+
+            //animacion del tiburon cada cierto tiempo cambia al siguiente frame
+            if (gameTime.TotalGameTime.Milliseconds % 25 == 0)
+            {
+                cambiarframe++;
+                tiburon = tiburonframes[cambiarframe, tiburonDireccion];
+            }
+
+            //variable bandera para la posicion del frame del sprite tiburon
+            if (cambiarframe == 19)
+            {
+                cambiarframe = 0;
+            }
+
+
             var teclaestado = Keyboard.GetState();
-
-            if (teclaestado.IsKeyDown(Keys.Up) && posicionpez.Y >= 40)
+            
+            if (pezgusano && quecolisiono()==1)
             {
-                posicionpez.Y -= vel;
+                pezgusano = false;
+                puntaje++;
+                Random rnd = new Random();
+
+                Vector2 tempgusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));
+                Rectangle temp = new Rectangle((int)tempgusano.X, (int)tempgusano.Y, gusano.Width, gusano.Height);
+                
+                while (temp.Intersects(rects[2]))
+                {
+                    tempgusano = new Vector2(rnd.Next(25, 1290), rnd.Next(105, 650));
+                    temp = new Rectangle((int)tempgusano.X, (int)tempgusano.Y, gusano.Width, gusano.Height);
+                }
+                posiciongusano = tempgusano;
+
             }
-            if (teclaestado.IsKeyDown(Keys.Down) && posicionpez.Y <= _graphics.GraphicsDevice.Viewport.Height - 135)
+
+            quecolisiono();
+
+            if (peztiburon == true)
+            {
+                //posicionpez = new Vector2(0, 0);
+                //peztiburon = false;
+                //Exit();
+
+            }
+
+            if (teclaestado.IsKeyDown(Keys.Up) && posicionpez.Y >= 40 && quecolisiono()!=2)
+            {               
+                posicionpez.Y -= vel;
+                peztiburon = false;
+            }
+            //cuando el tiburon toca el pez
+            else if (peztiburon == true)
+            {
+                //posicionpez = new Vector2(0,0);
+                puntaje = 0;
+                peztiburon = false;
+            }
+
+            if (teclaestado.IsKeyDown(Keys.Down) && posicionpez.Y <= _graphics.GraphicsDevice.Viewport.Height - 135 && quecolisiono() != 2)
             {
                 posicionpez.Y += vel;
             }
-            if (teclaestado.IsKeyDown(Keys.Left) && posicionpez.X >= 3)
+            if (teclaestado.IsKeyDown(Keys.Left) && posicionpez.X >= 3 && quecolisiono() != 2)
             {
 
                 pezDireccion = 1;
 
                 posicionpez.X -= vel;
             }
-            if (teclaestado.IsKeyDown(Keys.Right) && posicionpez.X <= _graphics.GraphicsDevice.Viewport.Width - 130)
+            if (teclaestado.IsKeyDown(Keys.Right) && posicionpez.X <= _graphics.GraphicsDevice.Viewport.Width - 130 && quecolisiono() != 2)
             {
 
                 pezDireccion = 0;
@@ -266,6 +307,25 @@ namespace Tarea1
 
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        int quecolisiono() //1 pezgusano, 2 peztiburon
+        {
+            if (rects!=null)
+            {
+                if (rects[0].Intersects(rects[1]))
+                {
+                    peztiburon = true;
+                    return 2;
+                }
+                else if (rects[0].Intersects(rects[2]))
+                {
+                    pezgusano = true;
+                    return 1;
+                }
+
+            }
+            return 0;
         }
     }
 }
