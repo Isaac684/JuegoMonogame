@@ -41,6 +41,7 @@ namespace Tarea1
         int tiburonDireccion = 0; //1=izquierda 0=derecha
 
         Song song;
+        Song final;
         SoundEffect punto;
         SoundEffect escudoef;
         float vel;
@@ -119,6 +120,7 @@ namespace Tarea1
 
             fondoPantalla = Content.Load<Texture2D>("fondo");
             song = Content.Load<Song>("flowergarden");
+            final = Content.Load<Song>("final");
             ContentManager manager = new ContentManager(this.Services, @"Content\");
             punto = manager.Load<SoundEffect>("punto");
             escudoef = manager.Load<SoundEffect>("escudoef");
@@ -287,6 +289,7 @@ namespace Tarea1
                         totalvida--;
                         MediaPlayer.Stop();
                         finjuego = true;
+                        MediaPlayer.Play(final);
                         if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
                         {
                             posiciontiburon.X += 8;
@@ -389,8 +392,8 @@ namespace Tarea1
             _spriteBatch.Draw(escudo, posescudo, Color.White);
             if (finjuego)
             {
-                _spriteBatch.Draw(gameover, new Rectangle(0, 0, 1024, 767), Color.White);
-                // noFantasmas = totalfan;
+                _spriteBatch.Draw(gameover, new Rectangle(0, 0, 1366, 700), Color.White);
+                
             }
             _spriteBatch.End();
             base.Draw(gameTime);

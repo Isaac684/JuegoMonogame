@@ -61,6 +61,12 @@
 /processorParam:TextureFormat=Color
 /build:escudo.png
 
+#begin estas-muerto.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:estas-muerto.mp3;final.mp3
+
 #begin flowergarden.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
