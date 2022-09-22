@@ -131,7 +131,7 @@ namespace Tarea1
 
             MediaPlayer.Volume = 0.8F;
             MediaPlayer.Play(song);
-            //MediaPlayer.IsRepeating = true;
+            MediaPlayer.IsRepeating = true;
             _font = Content.Load<SpriteFont>("fuente1");
 
             // TODO: use this.Content to load your game content here
@@ -202,12 +202,12 @@ namespace Tarea1
                 //desplazamiento del tiburon 
                 if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
                 {
-                    posiciontiburon.X += 8;
+                    posiciontiburon.X += 10;
                 }
                 else if (tiburonDireccion == 1 && posiciontiburon.X >= -300)
                 {
 
-                    posiciontiburon.X -= 8;
+                    posiciontiburon.X -= 10;
                 }
                 else if (tiburonDireccion == 0 && posiciontiburon.X >= 1406)
                 {
@@ -290,6 +290,7 @@ namespace Tarea1
                         MediaPlayer.Stop();
                         finjuego = true;
                         MediaPlayer.Play(final);
+                        MediaPlayer.IsRepeating = false;
                         if (tiburonDireccion == 0 && posiciontiburon.X <= 1406)
                         {
                             posiciontiburon.X += 8;
