@@ -50,14 +50,6 @@
 
 ---
 
-## Futuras mejoras 🔄
-
-- Introducción de niveles con diferentes escenarios.
-- Nuevos enemigos y obstáculos submarinos.
-- Power-ups para el pez, como velocidad extra o escudos temporales.
-- Sistema de tablas de líderes online.
-
----
 
 ## Créditos 🎨
 
